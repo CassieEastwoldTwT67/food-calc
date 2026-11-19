@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔥 千禧豹紋8-bit飲食計算機 🔥</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Courier New', 'Comic Sans MS', 'Press Start 2P', monospace;
+      background-color: #f0e68c;
+      background-image: 
+        radial-gradient(circle at 20% 30%, #d4a373 4px, transparent 4px),
+        radial-gradient(circle at 80% 70%, #b5835a 5px, transparent 5px),
+        radial-gradient(circle at 40% 90%, #8b5a2b 6px, transparent 6px),
+        radial-gradient(circle at 90% 20%, #a0522d 7px, transparent 7px),
+        repeating-linear-gradient(45deg, #8b5a2b 0px, #8b5a2b 4px, #c19a6b 4px, #c19a6b 12px);
+      background-size: 120px 120px, 100px 100px, 150px 150px, 80px 80px, 60px 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      image-rendering: pixelated;
+    }
+
+    /* 千禧豹紋外框 + 8bit 遊戲感 */
+    .game-container {
+      max-width: 1000px;
+      width: 100%;
+      background-color: #fdf5e6;
+      border: 8px solid #3e2723;
+      border-style: outset;
+      box-shadow: 12px 12px 0 #2e1b0e, 0 0 0 4px #f4a460;
+      padding: 20px 20px 30px;
+      position: relative;
+      image-rendering: pixelated;
+    }
+
+    /* 千禧年裝飾小圖案 (8-bit風格) */
+    .decoration {
+      position: absolute;
+      pointer-events: none;
+      font-size: 24px;
+      opacity: 0.7;
+    }
+
+    .dec1 { top: -10px; left: -10px; transform: rotate(-15deg); }
+    .dec2 { bottom: -10px; right: -10px; transform: rotate(10deg); }
+    .dec3 { top: 10px; right: 20px; font-size: 36px; opacity: 0.5; }
+    .dec4 { bottom: 20px; left: 10px; font-size: 30px; }
+
+    h1 {
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      font-size: 24px;
+      text-align: center;
+      color: #ff4500;
+      text-shadow: 4px 4px 0 #000000, 8px 8px 0 #ffd700;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      word-break: break-word;
+      background: #00000033;
+      padding: 12px;
+      border: 4px dashed #ff69b4;
+      border-radius: 0;
+    }
+
+    .section {
+      background: #fff0d4;
+      border: 6px double #8b4513;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 6px 6px 0 #3e2723;
+      position: relative;
+    }
+
+    .section-title {
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      font-size: 14px;
+      background: #ffb6c1;
+      display: inline-block;
+      padding: 8px 12px;
+      border: 4px solid #000;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      color: #1a1a1a;
+      letter-spacing: 1px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      font-size: 12px;
+      background: #e0e0e0;
+      padding: 6px 10px;
+      border: 3px solid #000;
+      color: #2c2c2c;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 3px 3px 0 #000;
+    }
+
+    select, input[type="text"], input[type="number"] {
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 16px;
+      padding: 8px 12px;
+      border: 4px solid #000;
+      background: #ffffe0;
+      box-shadow: inset 3px 3px 0 #b8860b;
+      color: #3e2723;
+      outline: none;
+      image-rendering: pixelated;
+      width: auto;
+      min-width: 120px;
+    }
+
+    select:focus, input:focus {
+      background: #fffacd;
+      border-color: #ff4500;
+    }
+
+    button {
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      font-size: 14px;
+      background: #ff69b4;
+      border: 5px outset #ff1493;
+      color: #000;
+      padding: 12px 20px;
+      cursor: pointer;
+      box-shadow: 6px 6px 0 #4b0082;
+      transition: all 0.05s linear;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 5px;
+    }
+
+    button:active {
+      border-style: inset;
+      box-shadow: 2px 2px 0 #4b0082;
+      transform: translate(4px, 4px);
+      background: #ff1493;
+    }
+
+    .food-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 10px;
+      background: #faebd7;
+      border: 4px solid #a0522d;
+      margin: 15px 0;
+      box-shadow: inset 4px 4px 0 #8b5a2b;
+    }
+
+    .food-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fffff0;
+      padding: 6px 8px;
+      border: 3px solid #000;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 14px;
+      box-shadow: 3px 3px 0 #6b4e2e;
+    }
+
+    .food-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #ff4500;
+      transform: scale(1.2);
+      margin-right: 4px;
+      cursor: pointer;
+    }
+
+    .food-item label {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      font-size: 13px;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .food-item .food-cal {
+      font-size: 12px;
+      color: #b22222;
+      background: #ffe4b5;
+      padding: 2px 5px;
+      border: 2px solid #000;
+    }
+
+    /* 自訂食物輸入區 */
+    .custom-food-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .custom-food-area input {
+      flex: 2;
+      min-width: 150px;
+    }
+
+    .custom-food-area input[type="number"] {
+      flex: 0.5;
+      min-width: 80px;
+    }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 10px;
+      background: #e6e6fa;
+      padding: 15px;
+      border: 4px solid #000;
+      box-shadow: 6px 6px 0 #483d8b;
+    }
+
+    .total-cal {
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      font-size: 20px;
+      background: #000;
+      color: #00ff00;
+      padding: 15px 20px;
+      border: 6px solid #ffd700;
+      text-shadow: 3px 3px 0 #006400;
+      letter-spacing: 2px;
+    }
+
+    .target-cal {
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      font-size: 14px;
+      background: #2e8b57;
+      color: #fff;
+      padding: 12px 18px;
+      border: 4px solid #000;
+    }
+
+    .advice-box {
+      background: #f0f8ff;
+      border: 6px ridge #ff8c00;
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 1.6;
+      box-shadow: 8px 8px 0 #b8860b;
+      margin-top: 20px;
+      min-height: 100px;
+      color: #2f4f4f;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .advice-box .highlight {
+      background: #ffff00;
+      color: #000;
+      padding: 2px 6px;
+      border: 2px solid #000;
+    }
+
+    /* 8-bit 小圖標 */
+    .pixel-heart::before {
+      content: "❤️";
+      font-size: 20px;
+      filter: drop-shadow(2px 2px 0 #000);
+    }
+
+    .blink {
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* 響應式 */
+    @media (max-width: 700px) {
+      h1 { font-size: 16px; }
+      .section-title { font-size: 11px; }
+      .total-cal { font-size: 14px; }
+      .target-cal { font-size: 11px; }
+      .food-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <!-- 千禧年復古裝飾 -->
+    <div class="decoration dec1">🌸</div>
+    <div class="decoration dec2">💾</div>
+    <div class="decoration dec3">⭐</div>
+    <div class="decoration dec4">🦋</div>
+
+    <h1>⚡ 豹紋8-BIT 飲食計算機 ⚡</h1>
+
+    <!-- 區塊1: 個人資料 & 建議熱量 -->
+    <div class="section">
+      <div class="section-title">👤 你的檔案</div>
+      <div class="row">
+        <label>年齡 <input type="number" id="age" value="25" min="10" max="100" style="width: 80px;"></label>
+        <label>性別 
+          <select id="gender">
+            <option value="male">男生</option>
+            <option value="female" selected>女生</option>
+          </select>
+        </label>
+        <label>活動量 
+          <select id="activity">
+            <option value="1.2">🛋️ 幾乎不動</option>
+            <option value="1.375" selected>🚶 輕度活動</option>
+            <option value="1.55">🏃 中度活動</option>
+            <option value="1.725">💪 高度活動</option>
+          </select>
+        </label>
+        <button id="calcTargetBtn">📟 計算建議熱量</button>
+      </div>
+      <div id="targetDisplay" class="target-cal" style="display: inline-block; margin-top: 10px;">
+        每日建議熱量: 點擊計算
+      </div>
+    </div>
+
+    <!-- 區塊2: 食物選擇 (常見食物清單) -->
+    <div class="section">
+      <div class="section-title">🍔 勾選你吃的食物</div>
+      <div class="food-grid" id="foodGrid">
+        <!-- 由 JS 動態生成 -->
+      </div>
+
+      <!-- 自訂食物 -->
+      <div class="custom-food-area">
+        <input type="text" id="customFoodName" placeholder="自訂食物名稱 (如: 雞排)">
+        <input type="number" id="customFoodCal" placeholder="熱量 (大卡)" min="0" step="1" style="width: 120px;">
+        <button id="addCustomBtn">➕ 加入</button>
+      </div>
+
+      <!-- 自訂食物列表顯示 -->
+      <div id="customFoodList" style="margin-top: 12px; font-family: 'Courier New'; font-weight: bold; background: #e8e8e8; padding: 8px; border: 3px solid #000; display: none;">
+        <span>🍽️ 自訂食物：</span>
+        <span id="customItemsText"></span>
+      </div>
+    </div>
+
+    <!-- 區塊3: 攝取總結 & 建議 -->
+    <div class="section">
+      <div class="section-title">📊 今日總結</div>
+      <div class="summary">
+        <div class="total-cal" id="totalCalDisplay">0 大卡</div>
+        <button id="resetBtn" style="background: #c0c0c0; border-color: #808080;">🔄 重置今日</button>
+      </div>
+      <div class="advice-box" id="adviceBox">
+        💡 選擇食物並計算後，這裡會顯示個人化建議。
+      </div>
+    </div>
+
+    <!-- 千禧年小提醒 -->
+    <div style="text-align: center; margin-top: 15px; font-size: 12px; color: #5d3a1a; font-weight: bold; text-shadow: 2px 2px 0 #f0e68c;">
+      <span class="pixel-heart"></span> 8-bit 豹紋風格 · 千禧年回憶 · 健康飲食 <span class="pixel-heart"></span>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ----- 常見食物清單 (名稱, 熱量/每份) -----
+      const commonFoods = [
+        { name: '白飯 (1碗)', cal: 280 },
+        { name: '糙米飯 (1碗)', cal: 250 },
+        { name: '雞胸肉 (100g)', cal: 165 },
+        { name: '滷蛋 (1顆)', cal: 75 },
+        { name: '荷包蛋 (1顆)', cal: 90 },
+        { name: '豆漿 (無糖, 300ml)', cal: 100 },
+        { name: '牛奶 (全脂, 300ml)', cal: 180 },
+        { name: '優格 (無糖, 100g)', cal: 60 },
+        { name: '香蕉 (1根)', cal: 105 },
+        { name: '蘋果 (1顆)', cal: 95 },
+        { name: '芭樂 (1顆)', cal: 120 },
+        { name: '花椰菜 (100g)', cal: 30 },
+        { name: '高麗菜 (100g)', cal: 25 },
+        { name: '地瓜 (1條, 100g)', cal: 110 },
+        { name: '馬鈴薯 (100g)', cal: 80 },
+        { name: '鮭魚 (100g)', cal: 208 },
+        { name: '雞腿 (1支)', cal: 250 },
+        { name: '牛肉 (100g)', cal: 250 },
+        { name: '豬肉片 (100g)', cal: 330 },
+        { name: '吐司 (1片)', cal: 70 },
+        { name: '燕麥片 (50g)', cal: 190 },
+        { name: '珍珠奶茶 (700ml)', cal: 550 },
+        { name: '可樂 (330ml)', cal: 140 },
+        { name: '炸雞 (1塊)', cal: 280 },
+        { name: '披薩 (1片)', cal: 300 },
+        { name: '冰淇淋 (100g)', cal: 210 },
+        { name: '巧克力 (50g)', cal: 280 },
+        { name: '洋芋片 (50g)', cal: 280 },
+        { name: '水煮蛋 (1顆)', cal: 70 },
+        { name: '豆腐 (100g)', cal: 80 }
+      ];
+
+      // ----- 狀態 -----
+      let customFoods = []; // { name, cal }
+      // 用於記錄選中的食物熱量: 直接從 DOM 讀取 checkbox 狀態較簡單
+
+      // DOM 元素
+      const foodGrid = document.getElementById('foodGrid');
+      const customFoodName = document.getElementById('customFoodName');
+      const customFoodCal = document.getElementById('customFoodCal');
+      const addCustomBtn = document.getElementById('addCustomBtn');
+      const customFoodListDiv = document.getElementById('customFoodList');
+      const customItemsText = document.getElementById('customItemsText');
+      const totalCalDisplay = document.getElementById('totalCalDisplay');
+      const adviceBox = document.getElementById('adviceBox');
+      const targetDisplay = document.getElementById('targetDisplay');
+      const calcTargetBtn = document.getElementById('calcTargetBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const ageInput = document.getElementById('age');
+      const genderSelect = document.getElementById('gender');
+      const activitySelect = document.getElementById('activity');
+
+      // 儲存當前建議熱量
+      let currentTargetCal = null;
+
+      // ----- 渲染常見食物清單 -----
+      function renderFoodGrid() {
+        foodGrid.innerHTML = '';
+        commonFoods.forEach((food, index) => {
+          const div = document.createElement('div');
+          div.className = 'food-item';
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.id = `food-${index}`;
+          checkbox.dataset.cal = food.cal;
+          checkbox.dataset.name = food.name;
+          // 當勾選改變時更新總熱量與建議
+          checkbox.addEventListener('change', updateTotalAndAdvice);
+
+          const label = document.createElement('label');
+          label.htmlFor = `food-${index}`;
+          label.textContent = food.name;
+
+          const calSpan = document.createElement('span');
+          calSpan.className = 'food-cal';
+          calSpan.textContent = `${food.cal} kcal`;
+
+          div.appendChild(checkbox);
+          div.appendChild(label);
+          div.appendChild(calSpan);
+          foodGrid.appendChild(div);
+        });
+      }
+
+      // ----- 更新自訂食物顯示列表 -----
+      function updateCustomFoodListUI() {
+        if (customFoods.length === 0) {
+          customFoodListDiv.style.display = 'none';
+          return;
+        }
+        customFoodListDiv.style.display = 'block';
+        customItemsText.innerHTML = customFoods.map((f, idx) =>
+          `<span style="background: #ffffe0; padding: 4px 8px; margin: 2px; border: 2px solid #000; display: inline-block;">
+            ${f.name} (${f.cal} kcal) 
+            <span style="color:red; cursor:pointer; margin-left:6px;" onclick="removeCustomFood(${idx})">✖</span>
+          </span>`
+        ).join('');
+      }
+
+      // 移除自訂食物 (全局函數)
+      window.removeCustomFood = function(index) {
+        customFoods.splice(index, 1);
+        updateCustomFoodListUI();
+        updateTotalAndAdvice();
+      };
+
+      // ----- 計算並更新總熱量與建議 -----
+      function updateTotalAndAdvice() {
+        let total = 0;
+
+        // 1. 常見食物勾選的熱量
+        const checkboxes = document.querySelectorAll('#foodGrid input[type="checkbox"]:checked');
+        checkboxes.forEach(cb => {
+          total += Number(cb.dataset.cal) || 0;
+        });
+
+        // 2. 自訂食物熱量
+        customFoods.forEach(f => total += Number(f.cal) || 0);
+
+        totalCalDisplay.textContent = `${total} 大卡`;
+
+        // 如果還沒有建議熱量，先提示
+        if (currentTargetCal === null) {
+          adviceBox.innerHTML = `💡 請先點擊「計算建議熱量」按鈕，才能獲得個人化建議喔！<br>目前攝取：<span class="highlight">${total} 大卡</span>`;
+          return;
+        }
+
+        // 產生個人化建議
+        const diff = total - currentTargetCal;
+        let adviceText = '';
+
+        if (Math.abs(diff) <= 100) {
+          adviceText = `🎉 太棒了！你的攝取量 ${total} 大卡，與建議目標 ${currentTargetCal} 大卡非常接近 (差距 ${Math.abs(diff)} 大卡)。\n✅ 繼續保持均衡飲食！`;
+        } else if (diff > 100) {
+          // 超過目標
+          const excess = diff;
+          adviceText = `⚠️ 今日攝取 ${total} 大卡，超過建議目標 ${currentTargetCal} 大卡 (多了 ${excess} 大卡)。\n`;
+          if (excess > 500) {
+            adviceText += `🔥 超出較多！建議：\n• 增加運動量 (如快走30分鐘消耗約150大卡)\n• 減少高油、高糖食物 (炸物、含糖飲料)\n• 下一餐選擇清淡蛋白質+蔬菜`;
+          } else if (excess > 200) {
+            adviceText += `🍽️ 超出一些！建議：\n• 今天多散步20分鐘\n• 避開精緻糖與油炸物\n• 多喝水幫助代謝`;
+          } else {
+            adviceText += `😊 稍微超出！建議：\n• 飯後散步15分鐘\n• 下一餐減少澱粉份量`;
+          }
+        } else {
+          // 不足目標
+          const deficit = Math.abs(diff);
+          adviceText = `⚠️ 今日攝取 ${total} 大卡，低於建議目標 ${currentTargetCal} 大卡 (不足 ${deficit} 大卡)。\n`;
+          if (deficit > 500) {
+            adviceText += `🍗 攝取嚴重不足！建議：\n• 補充優質蛋白質 (雞胸肉、豆腐、蛋)\n• 增加健康油脂 (堅果、酪梨)\n• 攝取足夠碳水化合物 (地瓜、糙米)`;
+          } else if (deficit > 200) {
+            adviceText += `🥩 攝取偏少！建議：\n• 多一份蛋白質 (豆漿、蛋、雞肉)\n• 補充水果或堅果\n• 不要跳餐，規律進食`;
+          } else {
+            adviceText += `🍎 稍微不足！建議：\n• 補充一份水果或一杯牛奶\n• 正餐確保有蛋白質與蔬菜`;
+          }
+        }
+
+        // 加入8bit風格裝飾
+        adviceBox.innerHTML = adviceText.replace(/\n/g, '<br>');
+      }
+
+      // ----- 計算建議熱量 (使用 Harris-Benedict 公式) -----
+      function calculateTarget() {
+        const age = parseFloat(ageInput.value);
+        const gender = genderSelect.value;
+        const activity = parseFloat(activitySelect.value);
+
+        if (isNaN(age) || age < 10 || age > 100) {
+          alert('請輸入有效的年齡 (10-100)');
+          return;
+        }
+
+        // 先以體重預設 60kg 來計算 (簡化版，因為沒有體重輸入，但可給予合理範圍)
+        // 但為了讓功能完整，我們用一個"虛擬體重" 基於性別與年齡稍微調整
+        // 為了互動性，直接使用標準公式但假設體重 65kg (男) / 55kg (女) 作為演示
+        // 更合理: 讓體重根據年齡略調整，但無法輸入，所以用固定值示範
+        // 為了讓使用者感覺更個人化，可以加入隱藏體重? 但題目沒要求體重，因此用性別固定體重
+        // 我們改進: 使用 Mifflin-St Jeor 公式需要體重，但我們沒有體重欄位，所以用預設體重:
+        // 男性 70kg, 女性 60kg (合理範圍)
+        let weight = (gender === 'male') ? 70 : 60;
+
+        let bmr;
+        if (gender === 'male') {
+          // Mifflin-St Jeor: 10*weight + 6.25*height - 5*age + 5
+          // 假設身高 170cm (男) / 160cm (女)
+          const height = 170;
+          bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+        } else {
+          const height = 160;
+          bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+        }
+
+        // 活動量因子
+        const tdee = bmr * activity;
+        const target = Math.round(tdee);
+
+        currentTargetCal = target;
+        targetDisplay.textContent = `每日建議熱量: ${target} 大卡 (約 ${Math.round(target/100)*100} 大卡)`;
+
+        // 更新建議
+        updateTotalAndAdvice();
+      }
+
+      // ----- 重置所有選擇與自訂食物 -----
+      function resetAll() {
+        // 取消所有勾選
+        document.querySelectorAll('#foodGrid input[type="checkbox"]').forEach(cb => cb.checked = false);
+        // 清空自訂食物
+        customFoods = [];
+        updateCustomFoodListUI();
+        // 清空輸入框
+        customFoodName.value = '';
+        customFoodCal.value = '';
+        // 重置建議熱量 (保留目標? 可保留)
+        // 但為了完整重置，也把目標清除
+        // 不過使用者可能想保留目標，我們只重置食物並重新計算
+        // 但我們保留目標熱量，重新整理建議
+        updateTotalAndAdvice();
+        // 如果希望重置目標也可，但看需求。保留目標更好，因為使用者可能只想改食物。
+        // 但按鈕是"重置今日"，所以把目標也清除好了
+        currentTargetCal = null;
+        targetDisplay.textContent = '每日建議熱量: 點擊計算';
+        adviceBox.innerHTML = '💡 選擇食物並計算後，這裡會顯示個人化建議。';
+        totalCalDisplay.textContent = '0 大卡';
+      }
+
+      // ----- 新增自訂食物 -----
+      function addCustomFood() {
+        const name = customFoodName.value.trim();
+        const cal = parseFloat(customFoodCal.value);
+
+        if (!name) {
+          alert('請輸入食物名稱');
+          return;
+        }
+        if (isNaN(cal) || cal < 0) {
+          alert('請輸入有效的熱量 (大卡)');
+          return;
+        }
+
+        customFoods.push({ name, cal });
+        updateCustomFoodListUI();
+
+        // 清空輸入
+        customFoodName.value = '';
+        customFoodCal.value = '';
+
+        // 更新總熱量與建議
+        updateTotalAndAdvice();
+      }
+
+      // ----- 初始化事件監聽 -----
+      function init() {
+        renderFoodGrid();
+
+        // 監聽所有食物 checkbox 的變化 (已在 render 時綁定)
+        // 但重新渲染後需要重新綁定? 我們在 render 時已綁定，但若重新渲染則需重新綁定
+        // 目前不會重新渲染，所以沒問題。
+
+        // 按鈕事件
+        calcTargetBtn.addEventListener('click', calculateTarget);
+        addCustomBtn.addEventListener('click', addCustomFood);
+        resetBtn.addEventListener('click', resetAll);
+
+        // 讓自訂食物輸入框按 Enter 也能加入
+        customFoodName.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            addCustomFood();
+          }
+        });
+        customFoodCal.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            addCustomFood();
+          }
+        });
+
+        // 當性別、年齡、活動量改變時，如果已經計算過建議熱量，則自動重新計算?
+        // 可以自動重算，讓體驗更好
+        ageInput.addEventListener('change', () => {
+          if (currentTargetCal !== null) calculateTarget();
+        });
+        genderSelect.addEventListener('change', () => {
+          if (currentTargetCal !== null) calculateTarget();
+        });
+        activitySelect.addEventListener('change', () => {
+          if (currentTargetCal !== null) calculateTarget();
+        });
+
+        // 初始更新總熱量 (0)
+        updateTotalAndAdvice();
+      }
+
+      // 啟動
+      init();
+    })();
+  </script>
+</body>
+</html>
